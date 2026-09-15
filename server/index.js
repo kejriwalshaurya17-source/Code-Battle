@@ -83,6 +83,8 @@ app.post('/api/admin/users/:id/password',auth,requireAdmin,async(req,res)=>{
  if(password.length<8)return res.status(400).json({error:'Password must be at least 8 characters.'});
  const target=db.prepare('SELECT id,username FROM Users WHERE id=?').get(req.params.id);
  if(!target)return res.status(404).json({error:'User not found.'});
+ if(target.username==='admin' && req.admin.username!=='admin')
+  return res.status(403).json({error:'Only the primary admin can reset the primary admin password.'});
  const hash=await bcrypt.hash(password,12);
  db.prepare('UPDATE Users SET password_hash=? WHERE id=?').run(hash,target.id);
  db.prepare('DELETE FROM Sessions WHERE user_id=?').run(target.id);
