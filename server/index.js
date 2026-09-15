@@ -61,7 +61,7 @@ app.post('/api/logout',(req,res)=>{const t=req.cookies?.cb_session;if(t)db.prepa
 
 function requireAdmin(req,res,next){
  const u=req.user;
- if(!u||u.guest||u.username!=='admin') return res.status(403).json({error:'Admin access required.'});
+ if(!u||u.guest||!(u.username==='admin'||u.is_admin)) return res.status(403).json({error:'Admin access required.'});
  req.admin=u; next();
 }
 app.get('/api/admin/summary',auth,requireAdmin,(req,res)=>{
